@@ -1,14 +1,13 @@
 package ru.weather.client
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import ru.weather.client.data.WeatherRepository
@@ -25,20 +24,22 @@ class WeatherViewModel(
 	private val weatherRepository: WeatherRepository
 ) : ViewModel() {
 
-	var weatherUiState: WeatherUiState by mutableStateOf(WeatherUiState.Loading)
-		private set
+	var weatherUiState = MutableStateFlow<WeatherUiState>(WeatherUiState.Loading)
 
 	init {
-		getWeather()
+		getWeather(isInit = false)
 	}
 
 	fun getWeather(
 		city: String = "Moscow",
 		days: Int = 4,
+		isInit: Boolean = false,
 	) {
 		viewModelScope.launch {
-			weatherUiState = WeatherUiState.Loading
-			weatherUiState =
+			if (isInit) {
+				weatherUiState.update { WeatherUiState.Loading }
+			}
+			weatherUiState.update {
 				try {
 					WeatherUiState.Success(
 						weatherRepository.getWeather(
@@ -52,6 +53,7 @@ class WeatherViewModel(
 				} catch (e: HttpException) {
 					WeatherUiState.Error
 				}
+			}
 		}
 	}
 
