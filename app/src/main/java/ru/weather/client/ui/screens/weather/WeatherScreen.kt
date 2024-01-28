@@ -1,6 +1,5 @@
 package ru.weather.client.ui.screens.weather
 
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -36,41 +36,50 @@ fun WeatherScreen(
 	val current = remember(weather) { weather.current }
 	val condition = remember(current) { current?.condition }
 	val forecast = remember(weather) { weather.forecast }
-
-	Column(
-		modifier = modifier.fillMaxSize(),
+	LazyColumn(
+		modifier = Modifier.fillMaxSize(),
 		horizontalAlignment = Alignment.CenterHorizontally
 	) {
-		Location(
-			name = location?.name ?: "",
-			country = location?.country ?: "",
-			time = location?.time ?: "",
-			modifier = Modifier.padding(top = 88.dp)
-		)
+		item {
+			Location(
+				name = location?.name ?: "",
+				country = location?.country ?: "",
+				time = location?.time ?: "",
+				modifier = Modifier.padding(top = 88.dp)
+			)
+		}
 
-		Main(
-			icon = condition?.getIcon() ?: R.drawable.sunny,
-			temperature = current?.temperature ?: 0.0,
-			text = condition?.text ?: "",
-			modifier = Modifier.padding(top = 50.dp)
-		)
+		item {
+			Main(
+				icon = condition?.getIcon() ?: R.drawable.sunny,
+				temperature = current?.temperature ?: 0.0,
+				text = condition?.text ?: "",
+				modifier = Modifier.padding(top = 50.dp)
+			)
+		}
 
-		FeelsLike(
-			feelsLike = current?.feelsLike ?: 0.0,
-			modifier = Modifier.padding(top = 50.dp)
-		)
+		item {
+			FeelsLike(
+				feelsLike = current?.feelsLike ?: 0.0,
+				modifier = Modifier.padding(top = 50.dp)
+			)
+		}
 
-		AdditionalInfo(
-			wind = current?.wind ?: 0.0,
-			humidity = current?.humidity ?: 0,
-			pressure = current?.getAtmosphericPressure() ?: 0.0,
-			modifier = Modifier.padding(top = 50.dp)
-		)
+		item {
+			AdditionalInfo(
+				wind = current?.wind ?: 0.0,
+				humidity = current?.humidity ?: 0,
+				pressure = current?.getAtmosphericPressure() ?: 0.0,
+				modifier = Modifier.padding(top = 50.dp)
+			)
+		}
 
-		FutureInfo(
-			forecast = forecast,
-			modifier = Modifier.padding(top = 30.dp)
-		)
+		item {
+			FutureInfo(
+				forecast = forecast,
+				modifier = Modifier.padding(top = 30.dp)
+			)
+		}
 	}
 }
 
@@ -93,7 +102,10 @@ private fun Location(
 		)
 
 		TextView(
-			text = time.split(" ").last(),
+			text = stringResource(
+				id = R.string.last_update,
+				time.split(" ").last()
+			),
 			modifier = Modifier
 				.align(Alignment.CenterHorizontally),
 			fontSize = 16.sp,
@@ -112,14 +124,14 @@ private fun Main(
 
 	Column(
 		modifier = modifier,
-		verticalArrangement = Arrangement.spacedBy(12.dp)
+		verticalArrangement = Arrangement.spacedBy(12.dp),
+		horizontalAlignment = Alignment.CenterHorizontally
 	) {
 		Image(
 			painter = painterResource(id = icon),
 			contentDescription = null,
 			modifier = Modifier
 				.size(60.dp)
-				.align(Alignment.CenterHorizontally),
 		)
 
 		Temperature(
@@ -127,11 +139,7 @@ private fun Main(
 			iconSize = 27.dp,
 		)
 
-		TextView(
-			text = text,
-			modifier = Modifier
-				.align(Alignment.CenterHorizontally),
-		)
+		TextView(text = text,)
 	}
 }
 
