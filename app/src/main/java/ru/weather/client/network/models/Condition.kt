@@ -1,5 +1,6 @@
 package ru.weather.client.network.models
 
+import ru.weather.client.R
 import ru.weather.client.utils.WeatherConditionUtils
 
 data class Condition(

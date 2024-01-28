@@ -34,7 +34,7 @@ class WeatherViewModel(
 
 	fun getWeather(
 		city: String = "Moscow",
-		days: Int = 3,
+		days: Int = 4,
 	) {
 		viewModelScope.launch {
 			weatherUiState = WeatherUiState.Loading

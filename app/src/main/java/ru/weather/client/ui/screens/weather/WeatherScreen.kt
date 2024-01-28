@@ -1,5 +1,6 @@
 package ru.weather.client.ui.screens.weather
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.weather.client.R
+import ru.weather.client.network.models.Forecast
 import ru.weather.client.network.models.Weather
 import ru.weather.client.ui.components.Info
 import ru.weather.client.ui.components.Temperature
@@ -33,6 +35,7 @@ fun WeatherScreen(
 	val location = remember(weather) { weather.location }
 	val current = remember(weather) { weather.current }
 	val condition = remember(current) { current?.condition }
+	val forecast = remember(weather) { weather.forecast }
 
 	Column(
 		modifier = modifier.fillMaxSize(),
@@ -62,6 +65,11 @@ fun WeatherScreen(
 			humidity = current?.humidity ?: 0,
 			pressure = current?.getAtmosphericPressure() ?: 0.0,
 			modifier = Modifier.padding(top = 50.dp)
+		)
+
+		FutureInfo(
+			forecast = forecast,
+			modifier = Modifier.padding(top = 30.dp)
 		)
 	}
 }
@@ -182,3 +190,38 @@ private fun AdditionalInfo(
 	}
 }
 
+@Composable
+private fun FutureInfo(
+	forecast: Forecast?,
+	modifier: Modifier = Modifier,
+) {
+	Column(
+		modifier = modifier.width(200.dp),
+		horizontalAlignment = Alignment.CenterHorizontally
+	) {
+		TextView(
+			text = "Average temperature",
+			modifier.padding(bottom = 10.dp),
+			fontSize = 16.sp,
+			fontWeight = FontWeight.SemiBold
+		)
+
+		forecast?.forecastDays?.drop(1)?.forEach { day ->
+			Info(
+				text = day.formatDate(),
+				icon = day.day?.condition?.getIcon() ?: R.drawable.sunny,
+				fontSize = 14.sp,
+				iconSize = 18.dp,
+				textBlockWidth = 100.dp,
+				valueContent = {
+					Temperature(
+						temperature = day.day?.temperature ?: 0.0,
+						iconSize = 10.dp,
+						fontSize = 16.sp,
+						modifier = Modifier.align(Alignment.CenterEnd)
+					)
+				}
+			)
+		}
+	}
+}

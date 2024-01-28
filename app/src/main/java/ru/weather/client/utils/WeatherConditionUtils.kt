@@ -4,7 +4,7 @@ import ru.weather.client.R
 
 object WeatherConditionUtils {
 
-	fun getIconByCondition(code: Int) = when(code) {
+	fun getIconByCondition(code: Int?) = when (code) {
 		// Clear and sunny conditions
 		1000 -> R.drawable.sunny
 		// Mostly clear, partly cloudy day
